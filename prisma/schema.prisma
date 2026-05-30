@@ -11,11 +11,123 @@ datasource db {
 }
 
 model User {
-  id           String   @id @default(uuid())
+  id           String        @id @default(cuid())
   name         String
-  email        String   @unique
+  email        String        @unique
   passwordHash String
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  projects     Project[]
+  resources    Resource[]
+  tags         Tag[]
+  activityLogs ActivityLog[]
+
   @@index([id])
+}
+
+model Project {
+  id           String        @id @default(cuid())
+  name         String
+  description  String?
+  status       Status        @default(ACTIVE)
+  user         User          @relation(fields: [userId], references: [id])
+  userId       String
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  resources    Resource[]
+  activityLogs ActivityLog[]
+  deletedAt    DateTime?
+
+  @@index([userId])
+}
+
+model Resource {
+  id           String        @id @default(cuid())
+  title        String
+  description  String?
+  type         ResourceType
+  content      String?
+  externalLink String?
+  user         User          @relation(fields: [userId], references: [id])
+  userId       String
+  project      Project       @relation(fields: [projectId], references: [id])
+  projectId    String
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  files        File[]
+  resourceTags ResourceTag[]
+  activityLogs ActivityLog[]
+  deletedAt    DateTime?
+
+  @@index([userId])
+  @@index([projectId])
+  @@index([type])
+}
+
+model File {
+  id         String   @id @default(cuid())
+  resource   Resource @relation(fields: [resourceId], references: [id])
+  resourceId String
+  fileName   String
+  fileURL    String
+  mimeType   String
+  fileSize   Int
+  createdAt  DateTime @default(now())
+}
+
+model Tag {
+  id           String        @id @default(cuid())
+  name         String
+  user         User          @relation(fields: [userId], references: [id])
+  userId       String
+  createdAt    DateTime      @default(now())
+  resourceTags ResourceTag[]
+
+  @@unique([userId, name])
+}
+
+model ResourceTag {
+  resource   Resource @relation(fields: [resourceId], references: [id])
+  tag        Tag      @relation(fields: [tagId], references: [id])
+  resourceId String
+  tagId      String
+
+  @@unique([resourceId, tagId])
+}
+
+model ActivityLog {
+  id         String       @id @default(cuid())
+  actionType ActivityType
+  user       User         @relation(fields: [userId], references: [id])
+  userId     String
+  resource   Resource?    @relation(fields: [resourceId], references: [id])
+  project    Project?     @relation(fields: [projectId], references: [id])
+  resourceId String?
+  projectId  String?
+  metadata   Json?
+  createdAt  DateTime     @default(now())
+
+  @@index([userId])
+  @@index([createdAt])
+}
+
+enum ActivityType {
+  PROJECT_CREATED
+  PROJECT_UPDATED
+  RESOURCE_CREATED
+  RESOURCE_UPDATED
+  RESOURCE_DELETED
+  FILE_UPLOADED
+}
+
+enum ResourceType {
+  NOTE
+  LINK
+  PDF
+  IMAGE
+}
+
+enum Status {
+  ACTIVE
+  ARCHIVED
 }
