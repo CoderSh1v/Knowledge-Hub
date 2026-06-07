@@ -21,6 +21,7 @@ model User {
   resources    Resource[]
   tags         Tag[]
   activityLogs ActivityLog[]
+  sessions     Session[]
 
   @@index([id])
 }
@@ -109,6 +110,16 @@ model ActivityLog {
 
   @@index([userId])
   @@index([createdAt])
+}
+
+model Session {
+  sessionId String @unique
+  user      User   @relation(fields: [userId], references: [id])
+  userId    String
+  expiresIn DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
 }
 
 enum ActivityType {
