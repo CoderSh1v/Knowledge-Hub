@@ -3,6 +3,8 @@ import { useForm, SubmitHandler } from "react-hook-form"
 import { signUpSchema } from "@/lib/schema"
 import { zodResolver } from "@hookform/resolvers/zod"
 import z from "zod"
+import { useRouter } from "next/navigation"
+
 function SignUp() {
     type Inputs = z.infer<typeof signUpSchema>
     const {
@@ -13,8 +15,19 @@ function SignUp() {
     } = useForm({
         resolver: zodResolver(signUpSchema)
     })
-
-    const onSubmit: SubmitHandler<Inputs> = (data) => {
+    const router = useRouter();
+    const onSubmit: SubmitHandler<Inputs> = async (formData) => {
+        const res = await fetch('/api/auth/signup', {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(formData)
+        })
+        const data =await res.json()
+        if(!res.ok){
+            console.log(data.message)
+            return
+        }
+        router.replace('/signin')
     }
 
     return (
