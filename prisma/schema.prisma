@@ -113,7 +113,7 @@ model ActivityLog {
 }
 
 model Session {
-  sessionId String @unique
+  sessionId String  @id
   user      User   @relation(fields: [userId], references: [id])
   userId    String
   expiresIn DateTime
