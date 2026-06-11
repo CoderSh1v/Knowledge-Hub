@@ -28,7 +28,7 @@ function SignIn() {
             console.log(data.message)
             return
         }
-        router.replace('/')
+        router.replace('/dashboard')
     }
 
     return (
