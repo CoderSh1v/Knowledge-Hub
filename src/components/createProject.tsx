@@ -9,31 +9,40 @@ import { Field, FieldGroup } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
+import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 
 const CreateProject = () => {
     const router = useRouter()
     type Inputs = z.infer<typeof newProjectSchema>
+    const {
+        register,
+        handleSubmit,
+        setError,
+        formState: { errors }
+    } = useForm<Inputs>({ resolver: zodResolver(newProjectSchema) })
     const onSubmit: SubmitHandler<Inputs> = async (formData) => {
-        const response = await fetch("/api/projects",{
+        const response = await fetch("/api/projects", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(formData)
         })
         const data = await response.json()
+        if (!response.ok) {
+            toast.error(data.message)
+            return setError("root.serverError", {
+                type: 'server',
+                message: data.message
+            })
+        }
         router.push(`/projects/${data.project.id}`)
     }
-    const {
-        register,
-        handleSubmit,
-        formState: { errors }
-    } = useForm<Inputs>({ resolver: zodResolver(newProjectSchema) })
-
 
     return (
         <Dialog>
             <DialogTrigger asChild>
                 <Button variant="outline">Add Project</Button>
+
             </DialogTrigger>
             <DialogContent className="sm:max-w-sm" aria-describedby={undefined} >
                 <form onSubmit={handleSubmit(onSubmit)}>
@@ -53,7 +62,8 @@ const CreateProject = () => {
                         </Field>
                     </FieldGroup>
                     <DialogFooter className="flex justify-center">
-                        <Button type="submit" >Save </Button>
+                        <Button type="submit" >Save </Button><br />
+
                     </DialogFooter>
                 </form>
             </DialogContent>
