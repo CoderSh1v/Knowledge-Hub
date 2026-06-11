@@ -9,13 +9,19 @@ import { Field, FieldGroup } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
+import { useRouter } from "next/navigation"
 
 const CreateProject = () => {
-
+    const router = useRouter()
     type Inputs = z.infer<typeof newProjectSchema>
-    const onSubmit: SubmitHandler<Inputs> = (formData) => {
-
-
+    const onSubmit: SubmitHandler<Inputs> = async (formData) => {
+        const response = await fetch("/api/projects",{
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(formData)
+        })
+        const data = await response.json()
+        router.push(`/projects/${data.project.id}`)
     }
     const {
         register,
@@ -29,7 +35,7 @@ const CreateProject = () => {
             <DialogTrigger asChild>
                 <Button variant="outline">Add Project</Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-sm">
+            <DialogContent className="sm:max-w-sm" aria-describedby={undefined} >
                 <form onSubmit={handleSubmit(onSubmit)}>
                     <DialogHeader>
                         <DialogTitle>Create New Project</DialogTitle>
