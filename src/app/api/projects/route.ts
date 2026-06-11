@@ -40,14 +40,21 @@ export async function GET(req: Request) {
             return Response.json({ success: false, message: "UserId not found" }, { status: 401 })
         }
         const projects = await prisma.project.findMany({
+            select : {
+                id : true,
+                name : true,
+                description : true,
+                status : true
+            },
             where: { userId: userId }
         })
-        console.log(projects)
-
-
-        return Response.json({ success: true, }, { status: 201 })
-    } catch (error: any) {
-
+        if (projects.length ===0) {
+            return Response.json({ success: false, message: "There are no projects" }, { status: 404 })
+        }
+        return Response.json({ success: true, projects }, { status: 201 })
+    }
+    catch (error: any) {
+        return Response.json({ success: false, message: error.message }, { status: 404 })
     }
 
 }
