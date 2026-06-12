@@ -1,8 +1,8 @@
 "use client"
-import CreateProject from "@/components/createProject"
-import ProjectCard from "@/components/projectCard"
+import CreateProject from "@/components/dashboard/createProject"
+import ProjectCard from "@/components/dashboard/projectCard"
 import { useEffect, useState } from "react"
-import { Project } from "@/components/projectCard"
+import { Project } from "@/components/dashboard/projectCard"
 
 const Dashboard = () => {
     const [projects, setProjects] = useState<Project[]>([])
@@ -21,7 +21,7 @@ const Dashboard = () => {
         <div>
             <CreateProject />
             {projects.map((project) => {
-                return <ProjectCard key={project.id} name={project.name} description={project.description} id={project.id} status={project.status} /> 
+                return <ProjectCard key={project.id} name={project.name} description={project.description} id={project.id} status={project.status} />
             })}
         </div>
     )

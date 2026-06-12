@@ -5,20 +5,20 @@ export interface Project {
     description?: string;
     status: 'ACTIVE' | 'ARCHIVED';
 }
+export const statusConfig = {
+    ACTIVE: {
+        bg: 'bg-green-100',
+        text: 'text-green-800',
+        label: 'Active',
+    },
+    ARCHIVED: {
+        bg: 'bg-gray-100',
+        text: 'text-gray-700',
+        label: 'Archived',
+    },
+};
 
 const ProjectCard = ({ name, id, description, status }: Project) => {
-    const statusConfig = {
-        ACTIVE: {
-            bg: 'bg-green-100',
-            text: 'text-green-800',
-            label: 'Active',
-        },
-        ARCHIVED: {
-            bg: 'bg-gray-100',
-            text: 'text-gray-700',
-            label: 'Archived',
-        },
-    };
 
     const config = statusConfig[status];
     return (
