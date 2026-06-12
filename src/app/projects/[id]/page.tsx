@@ -25,10 +25,6 @@ const SingleProject = () => {
         getProject()
     }, [])
     const getProject = async () => {
-        // const check = await check_whether_project_is_deleted(params.id)
-        // if (check) {
-        //     return <>This project is deleted. You can't access it here</>
-        // }
         const response = await fetch(`/api/projects/${params.id}`)
         const data = await response.json()
         if (!response.ok) return toast.error(data.message)
