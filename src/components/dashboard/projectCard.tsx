@@ -1,9 +1,13 @@
 "use Client"
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+
 export interface Project {
     name: string;
     id: string;
     description?: string;
     status: 'ACTIVE' | 'ARCHIVED';
+    deletedAt? : null | string 
 }
 export const statusConfig = {
     ACTIVE: {
@@ -19,10 +23,16 @@ export const statusConfig = {
 };
 
 const ProjectCard = ({ name, id, description, status }: Project) => {
-
+    const router = useRouter()
+    
+    const goToTheProject = ()=>{
+        router.push(`/projects/${id}`)
+    }
+    
     const config = statusConfig[status];
+    
     return (
-        <div className="border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow bg-white mt-2.5 mb-2.5">
+        <div className="border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow bg-white mt-2.5 mb-2.5" onClick={goToTheProject}>
             <div className="flex items-start justify-between mb-3">
                 <div className="flex-1">
                     <h3 className="text-sm font-medium">{name}</h3>

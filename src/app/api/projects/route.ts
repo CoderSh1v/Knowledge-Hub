@@ -40,12 +40,6 @@ export async function GET(req: Request) {
             return Response.json({ success: false, message: "UserId not found" }, { status: 401 })
         }
         const projects = await prisma.project.findMany({
-            select : {
-                id : true,
-                name : true,
-                description : true,
-                status : true
-            },
             where: { userId: userId }
         })
         if (projects.length ===0) {

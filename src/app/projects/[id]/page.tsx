@@ -5,7 +5,6 @@ import { useEffect, useState } from "react"
 import { toast } from "sonner"
 import { statusConfig } from '@/components/dashboard/projectCard'
 import DeleteButton from '@/components/projects/deleteProject'
-import { check_whether_project_is_deleted } from '@/lib/projectDeleteOrNot'
 
 type Project = {
     name: string,
