@@ -1,5 +1,5 @@
 "use client"
-import Navbar from "@/components/navbar"
+import Navbar from "@/components/navbar2"
 import { useForm, SubmitHandler } from "react-hook-form"
 import { signUpSchema } from "@/lib/schema"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -34,8 +34,8 @@ function SignUp() {
 
     return (
         <div className="min-h-screen bg-white">
-            
-            <Navbar/>
+
+            <Navbar />
 
             {/* Sign Up Form */}
             <main className="flex items-center justify-center px-8 py-20">

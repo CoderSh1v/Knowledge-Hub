@@ -4,7 +4,7 @@ import ProjectCard from "@/components/dashboard/projectCard"
 import { useEffect, useState } from "react"
 import { Project } from "@/components/dashboard/projectCard"
 import { toast } from "sonner"
-
+import Navbar from "@/components/navbar"
 const Dashboard = () => {
     const [projects, setProjects] = useState<Project[]>([])
     useEffect(() => {
@@ -17,16 +17,17 @@ const Dashboard = () => {
         setProjects(data.projects)
     }
     const visibleProjects = projects.filter(project => project.deletedAt === null)
-    
+
     return (
         <div>
+            <Navbar />
             <CreateProject />
 
 
-            {projects.length===0 ? <div>Loading... </div>:
-            visibleProjects.map((project) => {
-                return <ProjectCard key={project.id} name={project.name} description={project.description} id={project.id} status={project.status} />
-            })}
+            {projects.length === 0 ? <div>Loading... </div> :
+                visibleProjects.map((project) => {
+                    return <ProjectCard key={project.id} name={project.name} description={project.description} id={project.id} status={project.status} />
+                })}
         </div>
     )
 }

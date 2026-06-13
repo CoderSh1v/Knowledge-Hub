@@ -5,7 +5,7 @@ import { useEffect, useState } from "react"
 import { toast } from "sonner"
 import { statusConfig } from '@/components/dashboard/projectCard'
 import DeleteButton from '@/components/projects/deleteProject'
-
+import Navbar from '@/components/navbar'
 type Project = {
     name: string,
     id: string,
@@ -34,7 +34,9 @@ const SingleProject = () => {
 
     if (!project) return (<>Loading...</>)
     const config = statusConfig[project.status];
-    return (
+    return (<div>
+
+        <Navbar />
         <main className="min-h-screen bg-gray-50 p-8">
             <div className="max-w-3xl mx-auto">
                 <div className="mb-8">
@@ -61,6 +63,7 @@ const SingleProject = () => {
                 </div>
             </div>
         </main>
+    </div>
     )
 }
 

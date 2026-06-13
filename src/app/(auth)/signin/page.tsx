@@ -7,14 +7,14 @@ import { useRouter } from "next/navigation"
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import Link from 'next/link';
-import Navbar from "@/components/navbar"
+import Navbar from "@/components/navbar2"
 
 function SignIn() {
     type Inputs = z.infer<typeof signInSchema>
     const {
         register,
         handleSubmit,
-        
+
         formState: { errors },
     } = useForm<Inputs>({
         resolver: zodResolver(signInSchema)
@@ -56,9 +56,9 @@ function SignIn() {
                         {/* Password Field */}
                         <div>
                             <label htmlFor="password" className="block text-sm font-medium text-gray-900 mb-2">Password</label>
-                            <Input type="password" placeholder="••••••••"{...register('password')} className="w-full"/>
+                            <Input type="password" placeholder="••••••••"{...register('password')} className="w-full" />
                             {errors.password && (<p className="text-sm text-red-500">  {errors.password.message}</p>)}
-                            
+
                         </div>
                         <Button type="submit" className="w-full">Sign In</Button>
                     </form>

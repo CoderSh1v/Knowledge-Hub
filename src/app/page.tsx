@@ -1,12 +1,12 @@
 'use client';
-import Navbar from '@/components/navbar';
+import Navbar from '@/components/navbar2';
 
 export default function Home() {
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
-    
-      <Navbar/>
+
+      <Navbar />
 
       <main className="flex-1 flex flex-col items-center justify-center px-8 py-20">
         <div className="text-center max-w-2xl">
@@ -17,9 +17,9 @@ export default function Home() {
             Store. Manage. Connect.
           </p>
           <p className="text-lg text-gray-500 mb-12">
-            Organize your knowledge, manage your resources, and unlock insights 
+            Organize your knowledge, manage your resources, and unlock insights
           </p>
-          
+
         </div>
       </main>
     </div>
