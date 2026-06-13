@@ -1,6 +1,6 @@
 import prisma from "@/lib/db";
 import getCurrentUser from "@/lib/getUserId";
-import { check_whether_project_is_deleted } from "@/lib/projectDeleteOrNot";
+
 export async function GET(
     request: Request,
     { params }: { params: Promise<{ id: string }> }
@@ -24,7 +24,7 @@ export async function GET(
         success: true,
         project
     }, { status: 200 })
-    
+
 }
 
 export async function DELETE(
@@ -38,7 +38,7 @@ export async function DELETE(
             message: "User Id not Found"
         }, { status: 404 })
     }
-    
+
     const project = await prisma.project.update({
         where: { id: id },
         data: {
@@ -47,15 +47,55 @@ export async function DELETE(
     })
 
     await prisma.activityLog.create({
-         data: {
+        data: {
+            actionType: "PROJECT_UPDATED",
+            user: { connect: { id: userId } },
+            project: { connect: { id: project.id } },
+            metadata: {
+                message: "Project Soft Deleted"
+            }
+        }
+    })
+    return Response.json({ success: true, message: "Project Soft Deleted" }, { status: 202 })
+
+}
+
+export async function PATCH(
+    req: Request,
+    { params }: { params: Promise<{ id: string }> }) {
+    const { id } = await params;
+    const userId = await getCurrentUser();
+    const body = await req.json()
+    if (!userId) {
+        return Response.json({
+            success: false,
+            message: "User Id not Found"
+        }, { status: 404 })
+    }
+    const project = await prisma.project.update({
+        where: { id: id },
+        data: body
+    })
+    if (body.status) {
+        await prisma.activityLog.create({
+            data: {
                 actionType: "PROJECT_UPDATED",
                 user: { connect: { id: userId } },
                 project: { connect: { id: project.id } },
-                metadata : {
-                    message : "Project Soft Deleted"
-                }
+                metadata: { message: `Changed status to ${body.status}` }
             }
-    })
-    return Response.json({ success: true,message :"Project Soft Deleted" }, { status: 202 })
+        })
+    }
+    if (body.name) {
+        await prisma.activityLog.create({
+            data: {
+                actionType: "PROJECT_UPDATED",
+                user: { connect: { id: userId } },
+                project: { connect: { id: project.id } },
+                metadata: { message: `Changed name and description to ${body}` }
+            }
+        })
+    }
+    return Response.json({ success: true, message: "Project Updated" }, { status: 200 })
 
 }

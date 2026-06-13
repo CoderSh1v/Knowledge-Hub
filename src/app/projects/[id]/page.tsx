@@ -6,6 +6,9 @@ import { toast } from "sonner"
 import { statusConfig } from '@/components/dashboard/projectCard'
 import DeleteButton from '@/components/projects/deleteProject'
 import Navbar from '@/components/navbar'
+import ChangeStatusButton from '@/components/projects/changeStatusButton'
+import EditButton from '@/components/projects/editDialog'
+
 type Project = {
     name: string,
     id: string,
@@ -27,8 +30,10 @@ const SingleProject = () => {
     const getProject = async () => {
         const response = await fetch(`/api/projects/${params.id}`)
         const data = await response.json()
-        if (!response.ok) return toast.error(data.message)
-
+        if (!response.ok) {
+            toast.error(data.message)
+            return
+        }
         setProject(data.project)
     }
 
@@ -53,12 +58,8 @@ const SingleProject = () => {
                     <p className="text-gray-700 leading-relaxed">{project.description}</p>
                 </div>
                 <div className="flex gap-3">
-                    <Button variant="outline" size="lg" className="flex items-center gap-2">
-                        Change Status
-                    </Button>
-                    <Button variant="outline" size="lg" className="flex items-center gap-2">
-                        Edit
-                    </Button>
+                    <ChangeStatusButton id={project.id} status={project.status} onSuccess={getProject} />
+                    <EditButton id={project.id} name={project.name} description={project.description} onSuccess={getProject} />
                     <DeleteButton id={params.id} />
                 </div>
             </div>
