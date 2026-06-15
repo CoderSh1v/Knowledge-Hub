@@ -1,5 +1,4 @@
 "use client"
-import { Button } from '@/components/ui/button'
 import { useParams } from "next/navigation"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
@@ -8,6 +7,7 @@ import DeleteButton from '@/components/projects/deleteProject'
 import Navbar from '@/components/navbar'
 import ChangeStatusButton from '@/components/projects/changeStatusButton'
 import EditButton from '@/components/projects/editDialog'
+import CreateResourceDialog from '@/components/projects/createResourceDialog'
 
 type Project = {
     name: string,
@@ -63,6 +63,7 @@ const SingleProject = () => {
                     <DeleteButton id={params.id} />
                 </div>
             </div>
+            <CreateResourceDialog />
         </main>
     </div>
     )
