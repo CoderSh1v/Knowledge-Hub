@@ -65,14 +65,7 @@ export const newResourceSchema = z.object({
             }
         }
     }
-
-    if ((data.resourceType === 'pdf' || data.resourceType === 'image') && !data.file) {
-        ctx.addIssue({
-            code: 'custom',
-            path: ['file'],
-            message: 'File is required',
-        });
-    }
+    
     if (data.resourceType === "pdf") {
         if (!data.file) {
             ctx.addIssue({
