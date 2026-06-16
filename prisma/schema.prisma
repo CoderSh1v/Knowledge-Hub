@@ -61,6 +61,7 @@ model Resource {
   activityLogs ActivityLog[]
   deletedAt    DateTime?
 
+  @@unique([userId,title,type])
   @@index([userId])
   @@index([projectId])
   @@index([type])
@@ -128,6 +129,7 @@ model Session {
 enum ActivityType {
   PROJECT_CREATED
   PROJECT_UPDATED
+  PROJECT_DELETED
   RESOURCE_CREATED
   RESOURCE_UPDATED
   RESOURCE_DELETED
