@@ -2,7 +2,8 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose } from '@/components/ui/dialog';
+import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { newResourceSchema } from '@/lib/schema';
@@ -11,7 +12,7 @@ import { z } from 'zod'
 
 type ResourceType = 'note' | 'pdf' | 'image' | 'link';
 
-export default function CreateResourceDialog() {
+export default function CreateResourceDialog({ projectId }: { projectId: string }) {
     const [open, setOpen] = useState(false);
     const [tagInput, setTagInput] = useState('');
     const resourceTypes: {
@@ -25,15 +26,9 @@ export default function CreateResourceDialog() {
             { id: 'link', label: 'Link', description: 'Save useful links' },
         ];
 
-    const {
-        register,
-        formState: { errors },
-        watch,
-        handleSubmit,
-        reset,
-        setValue
-    } = useForm<z.input<typeof newResourceSchema>, any, z.output<typeof newResourceSchema>
-    >({ resolver: zodResolver(newResourceSchema) })
+    const { register, watch, handleSubmit, reset, setValue, formState: { errors } } =
+        useForm<z.input<typeof newResourceSchema>, any, z.output<typeof newResourceSchema>
+        >({ resolver: zodResolver(newResourceSchema) })
     const resourceType = watch('resourceType')
     const file = watch('file') as FileList | undefined
     const tags = watch("tags") ?? []
@@ -47,13 +42,18 @@ export default function CreateResourceDialog() {
         setValue('tags', tags.filter(tag => tag !== tagToRemove));
     };
 
-    const onSubmit: SubmitHandler<z.output<typeof newResourceSchema>> = (formData) => {
-        const payload = {
-            formData,
-            tags
+    const onSubmit: SubmitHandler<z.output<typeof newResourceSchema>> = async (formData) => {
+        const response = await fetch('/api/resources', {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ formData, projectId })
+        })
+        const data = await response.json()
+        console.log(data)
+        if (!response.ok) {
+            toast.error(data.message)
+            return
         }
-        console.log(payload)
-
         setOpen(false);
         setTagInput('');
         reset()
@@ -192,9 +192,9 @@ export default function CreateResourceDialog() {
 
                                 {/* Action Buttons */}
                                 <div className="flex gap-2 justify-end pt-4">
-                                    <Button type="button" variant="outline" >
-                                        Back
-                                    </Button>
+                                    <DialogClose asChild>
+                                        <Button type="button" variant="outline" >Back</Button>
+                                    </DialogClose>
                                     <Button type='submit'>Create</Button>
                                 </div>
                             </>

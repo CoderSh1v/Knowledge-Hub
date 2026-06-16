@@ -62,8 +62,9 @@ const SingleProject = () => {
                     <EditButton id={project.id} name={project.name} description={project.description} onSuccess={getProject} />
                     <DeleteButton id={params.id} />
                 </div>
+                <br />
+            <CreateResourceDialog projectId={params.id}/>
             </div>
-            <CreateResourceDialog />
         </main>
     </div>
     )
