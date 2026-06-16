@@ -46,6 +46,7 @@ model Project {
 model Resource {
   id           String        @id @default(cuid())
   title        String
+  displayName  String
   description  String?
   type         ResourceType
   content      String?
@@ -61,7 +62,7 @@ model Resource {
   activityLogs ActivityLog[]
   deletedAt    DateTime?
 
-  @@unique([userId,title,type])
+  @@unique([userId, title, type])
   @@index([userId])
   @@index([projectId])
   @@index([type])
@@ -70,7 +71,7 @@ model Resource {
 model File {
   id         String   @id @default(cuid())
   resource   Resource @relation(fields: [resourceId], references: [id])
-  resourceId String @unique
+  resourceId String   @unique
   fileName   String
   fileURL    String
   mimeType   String
