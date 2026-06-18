@@ -1,5 +1,6 @@
 import prisma from "@/lib/db";
 import getCurrentUser from "@/lib/getUserId";
+import { Resource } from "@/generated/prisma/client";
 
 export async function GET(
     request: Request,
@@ -20,9 +21,24 @@ export async function GET(
             userId: userId
         }
     })
+    const resources = await prisma.resource.findMany({
+        where: {
+            userId: userId,
+            projectId: id
+        }
+    })
+    const grouopedResource = resources.reduce((acc: Record<string, Resource[]>, resource: Resource) => {
+        if (!acc[resource.type]) {
+            acc[resource.type] = []
+        }
+        acc[resource.type].push(resource)
+        return acc
+    }, {})
+
     return Response.json({
         success: true,
-        project
+        project,
+        grouopedResource
     }, { status: 200 })
 
 }
