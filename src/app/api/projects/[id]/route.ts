@@ -27,18 +27,11 @@ export async function GET(
             projectId: id
         }
     })
-    const grouopedResource = resources.reduce((acc: Record<string, Resource[]>, resource: Resource) => {
-        if (!acc[resource.type]) {
-            acc[resource.type] = []
-        }
-        acc[resource.type].push(resource)
-        return acc
-    }, {})
 
     return Response.json({
         success: true,
         project,
-        grouopedResource
+        resources
     }, { status: 200 })
 
 }
