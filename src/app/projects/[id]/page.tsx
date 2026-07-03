@@ -8,6 +8,7 @@ import Navbar from '@/components/navbar'
 import ChangeStatusButton from '@/components/projects/changeStatusButton'
 import EditButton from '@/components/projects/editDialog'
 import CreateResourceDialog from '@/components/projects/createResourceDialog'
+import ResourceSection from "@/components/resources/resourceSection"
 
 type Project = {
     name: string,
@@ -23,7 +24,7 @@ type Project = {
 const SingleProject = () => {
     const params = useParams<{ id: string }>()
     const [project, setProject] = useState<Project | null>(null)
-
+    const [resources, setResources] = useState([])
     useEffect(() => {
         getProject()
     }, [])
@@ -35,6 +36,7 @@ const SingleProject = () => {
             return
         }
         setProject(data.project)
+        setResources(data.resources)
     }
 
     if (!project) return (<>Loading...</>)
@@ -64,6 +66,7 @@ const SingleProject = () => {
                 </div>
                 <br />
             <CreateResourceDialog projectId={params.id}/>
+            <ResourceSection resources={resources}/>
             </div>
         </main>
     </div>
