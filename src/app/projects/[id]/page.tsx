@@ -66,7 +66,7 @@ const SingleProject = () => {
                 </div>
                 <br />
             <CreateResourceDialog projectId={params.id}/>
-            <ResourceSection resources={resources}/>
+            <ResourceSection resources={resources} projectId ={params.id} onDelete={getProject}/>
             </div>
         </main>
     </div>

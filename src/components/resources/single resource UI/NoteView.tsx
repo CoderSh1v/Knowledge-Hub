@@ -5,6 +5,8 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Pencil, Trash2, X, Plus } from 'lucide-react';
 import { ResourceType } from '@/generated/prisma/enums';
+import DeleteResourceButton from '../deleteResource';
+
 interface ResourceTag {
     id: string;
     name: string;
@@ -14,19 +16,20 @@ export interface ResourceProps {
     resource: {
         id: string;
         displayName: string;
-        content: string | null;
+        content?: string | null;
         resourceTags: ResourceTag[];
-        description: string | null;
+        description?: string | null;
         type: ResourceType;
-        externalLink: string | null;
-        createdAt: Date | null;
-        updatedAt: Date | null;
-        file: File | null;
-        deletedAt: Date | null;
+        externalLink?: string | null;
+        createdAt?: Date | null;
+        updatedAt?: Date | null;
+        file?: File | null;
+        deletedAt?: Date | null;
+        projectId :string
     }
 }
 
-export function NoteView({ resource }: ResourceProps) {
+export function NoteView({ resource, projectId }: { resource: ResourceProps['resource'], projectId: string }) {
     const [isEditing, setIsEditing] = useState(false);
     const [editContent, setEditContent] = useState(resource.content || '');
     const [newTag, setNewTag] = useState('');
@@ -62,15 +65,7 @@ export function NoteView({ resource }: ResourceProps) {
                                 <Pencil className="w-4 h-4 mr-2" />
                                 {isEditing ? 'Cancel' : 'Edit'}
                             </Button>
-                            <Button variant="destructive" onClick={() => {
-                                if (confirm('Are you sure you want to delete this note?')) {
-                                    // onDelete(id);
-                                }
-                            }}
-                            >
-                                <Trash2 className="w-4 h-4 mr-2" />
-                                Delete
-                            </Button>
+                            <DeleteResourceButton id={resource.id} projectId={projectId} />
                         </div>
                     </div>
                 </div>

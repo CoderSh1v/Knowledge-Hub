@@ -5,18 +5,15 @@ import { Badge } from '@/components/ui/badge';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { MoreVertical, FileText, Link as LinkIcon, FileUp, Image as ImageIcon, Pencil, Trash2, ExternalLink } from 'lucide-react';
 import Link from 'next/link';
+import DeleteResourceButton from './deleteResource';
+import { ResourceProps } from './single resource UI/NoteView';
+type Props = ResourceProps["resource"] & {
+  projectId: string,
+  onDelete: () => Promise<void>
+};
 
-interface ResourceCardProps {
-  id: string;
-  type: 'NOTE' | 'LINK' | 'PDF' | 'IMAGE';
-  displayName: string;
-  description?: string | null;
-  tags?: string[];
-  onEdit?: (id: string) => void;
-  onDelete?: (id: string) => void;
-}
+export function ResourceCard({ id, type, displayName, description, resourceTags, projectId,onDelete }: Props) {
 
-export function ResourceCard({ id, type, displayName, description, tags, onEdit, onDelete }: ResourceCardProps) {
   const iconMap = {
     NOTE: <FileText className="w-6 h-6 text-blue-500" />,
     LINK: <LinkIcon className="w-6 h-6 text-purple-500" />,
@@ -25,7 +22,6 @@ export function ResourceCard({ id, type, displayName, description, tags, onEdit,
   };
 
   const showEdit = type !== 'NOTE';
-
   return (
     <div className="bg-white border border-gray-200 rounded-lg p-5 hover:shadow-md transition-shadow h-full flex flex-col">
       {/* Header with icon and menu */}
@@ -48,18 +44,17 @@ export function ResourceCard({ id, type, displayName, description, tags, onEdit,
               </Link>
             </DropdownMenuItem>
             {showEdit && (
-              <DropdownMenuItem onClick={() => onEdit?.(id)} className="flex items-center gap-2 cursor-pointer">
+              <DropdownMenuItem onClick={() => { }} className="flex items-center gap-2 cursor-pointer">
                 <Pencil className="w-4 h-4" />
                 <span>Edit</span>
               </DropdownMenuItem>
             )}
-            <DropdownMenuItem
-              onClick={() => onDelete?.(id)}
-              className="flex items-center gap-2 cursor-pointer text-red-600"
-            >
-              <Trash2 className="w-4 h-4" />
-              <span>Delete</span>
-            </DropdownMenuItem>
+            <DeleteResourceButton id={id} projectId={projectId} onDelete={onDelete }>
+              <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="flex items-center gap-2 cursor-pointer text-red-600">
+                <Trash2 className="w-4 h-4" />
+                <span>Delete</span>
+              </DropdownMenuItem>
+            </DeleteResourceButton>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
@@ -68,11 +63,11 @@ export function ResourceCard({ id, type, displayName, description, tags, onEdit,
         <p className="text-sm text-gray-600 line-clamp-2 mb-3">{description}</p>
       )}
 
-      {tags && tags.length > 0 && (
+      {resourceTags && resourceTags.length > 0 && (
         <div className="flex flex-wrap gap-2 mt-auto">
-          {tags.map((tag) => (
-            <Badge key={tag} variant="secondary" className="text-xs">
-              {tag}
+          {resourceTags.map((tag) => (
+            <Badge key={tag.id} variant="secondary" className="text-xs">
+              {tag.name}
             </Badge>
           ))}
         </div>

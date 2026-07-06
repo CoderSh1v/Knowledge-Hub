@@ -1,9 +1,8 @@
 'use client'
-import { Resource } from "@/generated/prisma/client"
+import { ResourceProps } from "./single resource UI/NoteView"
 import { ResourceCard } from "./resourceCard"
 import Link from "next/link"
-const ResourceSection = ({ resources }: { resources: Resource[] }) => {
-    console.log(resources)
+const ResourceSection = ({ resources, projectId, onDelete }: { resources: ResourceProps['resource'][], projectId: string, onDelete: () => Promise<void> }) => {
 
     return (
         <div>
@@ -17,7 +16,8 @@ const ResourceSection = ({ resources }: { resources: Resource[] }) => {
 
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {resources.map((resource: Resource) => {
+                    {resources.map((resource: ResourceProps['resource']) => {
+                        if (resource.deletedAt) return
                         let href;
                         switch (resource.type) {
                             case "NOTE":
@@ -37,7 +37,7 @@ const ResourceSection = ({ resources }: { resources: Resource[] }) => {
                         }
                         return (
                             <Link href={href} key={resource.id} target="_blank">
-                                <ResourceCard displayName={resource.displayName} id={resource.id} type={resource.type} description={resource.description} />
+                                <ResourceCard displayName={resource.displayName} id={resource.id} type={resource.type} description={resource.description} resourceTags={resource.resourceTags} projectId={projectId} onDelete={onDelete} />
                             </Link>
 
                         )
