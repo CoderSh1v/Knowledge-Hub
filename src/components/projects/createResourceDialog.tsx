@@ -9,22 +9,20 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 import { newResourceSchema } from '@/lib/schema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod'
+import { useRouter } from 'next/navigation';
 
-type ResourceType = 'note' | 'pdf' | 'image' | 'link';
+type ResourceType = 'NOTE' | 'PDF' | 'IMAGE' | 'LINK';
 
 export default function CreateResourceDialog({ projectId }: { projectId: string }) {
+    const router = useRouter();
     const [open, setOpen] = useState(false);
     const [tagInput, setTagInput] = useState('');
-    const resourceTypes: {
-        id: ResourceType;
-        label: string;
-        description: string;
-    }[] = [
-            { id: 'note', label: 'Note', description: 'Quick text-based notes' },
-            { id: 'pdf', label: 'PDF', description: 'Upload PDF documents' },
-            { id: 'image', label: 'Image', description: 'Upload images' },
-            { id: 'link', label: 'Link', description: 'Save useful links' },
-        ];
+    const resourceTypes: { id: ResourceType; label: string; description: string; }[] = [
+        { id: 'NOTE', label: 'Note', description: 'Quick text-based notes' },
+        { id: 'PDF', label: 'PDF', description: 'Upload PDF documents' },
+        { id: 'IMAGE', label: 'Image', description: 'Upload images' },
+        { id: 'LINK', label: 'Link', description: 'Save useful links' },
+    ];
 
     const { register, watch, handleSubmit, reset, setValue, formState: { errors } } =
         useForm<z.input<typeof newResourceSchema>, any, z.output<typeof newResourceSchema>
@@ -54,6 +52,7 @@ export default function CreateResourceDialog({ projectId }: { projectId: string 
             toast.error(data.message)
             return
         }
+        if (resourceType === 'NOTE') router.push(`/resources/${data.id}`)
         setOpen(false);
         setTagInput('');
         reset()
@@ -106,7 +105,7 @@ export default function CreateResourceDialog({ projectId }: { projectId: string 
                                     </div>
 
                                     {/* Description - PDF, Image, Link */}
-                                    {(resourceType === 'pdf' || resourceType === 'image' || resourceType === 'link') && (
+                                    {(resourceType === 'PDF' || resourceType === 'IMAGE' || resourceType === 'LINK') && (
                                         <div>
                                             <label className="block text-sm font-medium text-gray-900 mb-2">
                                                 Description
@@ -119,7 +118,7 @@ export default function CreateResourceDialog({ projectId }: { projectId: string 
                                     )}
                                     <input type="hidden" {...register('resourceType')} />
                                     {/* File Upload - PDF, Image */}
-                                    {(resourceType === 'pdf' || resourceType === 'image') && (
+                                    {(resourceType === 'PDF' || resourceType === 'IMAGE') && (
                                         <div>
                                             <label className="block text-sm font-medium text-gray-900 mb-2">
                                                 Upload {resourceType.toUpperCase()}
@@ -128,7 +127,7 @@ export default function CreateResourceDialog({ projectId }: { projectId: string 
                                                 <input
                                                     type="file"
                                                     {...register('file')}
-                                                    accept={resourceType === 'pdf' ? '.pdf' : 'image/*'}
+                                                    accept={resourceType === 'PDF' ? '.pdf' : 'image/*'}
                                                     className="hidden"
                                                     id="file-upload"
                                                 />
@@ -141,7 +140,7 @@ export default function CreateResourceDialog({ projectId }: { projectId: string 
                                                             <>
                                                                 <div>Click to upload or drag and drop</div>
                                                                 <div className="text-xs text-gray-500">
-                                                                    {resourceType === 'pdf' ? 'PDF only' : 'Images only'}
+                                                                    {resourceType === 'PDF' ? 'PDF only' : 'Images only'}
                                                                 </div>
                                                             </>
                                                         )}
@@ -152,7 +151,7 @@ export default function CreateResourceDialog({ projectId }: { projectId: string 
                                     )}
 
                                     {/* URL - Link */}
-                                    {resourceType === 'link' && (
+                                    {resourceType === 'LINK' && (
                                         <div>
                                             <label className="block text-sm font-medium text-gray-900 mb-2">URL</label>
                                             <Input {...register('url')} type="url" placeholder="https://example.com" />

@@ -29,7 +29,7 @@ export const newProjectSchema = z.object({
 
 const MAX_SIZE = 5 * 1024 * 1024
 export const newResourceSchema = z.object({
-    resourceType: z.enum(['note', 'pdf', 'image', 'link']),
+    resourceType: z.enum(['NOTE', 'PDF', 'IMAGE', 'LINK']),
     title: z.string().trim().min(1, { message: "Resource name is required" }),
     description: z.string().optional(),
     url: z.string().optional(),
@@ -46,7 +46,7 @@ export const newResourceSchema = z.object({
         .refine((file) => !file || file.size <= MAX_SIZE, { message: "File size must be less than 5MB", })
         .optional()
 }).superRefine((data, ctx) => {
-    if (data.resourceType === "link") {
+    if (data.resourceType === "LINK") {
         if (!data.url?.trim()) {
             ctx.addIssue({
                 code: "custom",
@@ -65,8 +65,8 @@ export const newResourceSchema = z.object({
             }
         }
     }
-    
-    if (data.resourceType === "pdf") {
+
+    if (data.resourceType === "PDF") {
         if (!data.file) {
             ctx.addIssue({
                 code: "custom",
@@ -82,7 +82,7 @@ export const newResourceSchema = z.object({
         }
     }
 
-    if (data.resourceType === "image") {
+    if (data.resourceType === "IMAGE") {
         if (!data.file) {
             ctx.addIssue({
                 code: "custom",
