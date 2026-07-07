@@ -5,19 +5,30 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { X, Plus } from 'lucide-react';
 import { ResourceProps, ResourceTag } from './single resource UI/NoteView';
+import { toast } from 'sonner';
 
 const ShowAndEditTags = ({ resource }: { resource: ResourceProps['resource'] }) => {
-
     const [newTag, setNewTag] = useState('');
     const [tags, setTags] = useState<ResourceTag[]>(resource.resourceTags);
 
-    const handleAddTag = () => {
-        
+    const handleAddTag = async () => {
+        const response = await fetch(`/api/resources/${resource.id}/tags/`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ tagName: newTag.trim().toLowerCase() })
+        })
+        const data = await response.json()
+        if (!response.ok) { toast.error(data.message); return }
+        const tagExists = tags.some(tag => tag.name === data.tag.name);
+
+        if (!tagExists) setTags([...tags, { id: data.tag.id, name: data.tag.name }]);
         setNewTag('');
     };
 
-    const handleRemoveTag = (tagId: string) => {
-        // This will be connected to your API
+    const handleRemoveTag = async (tagId: string) => {
+        const response = await fetch(`/api/resources/${resource.id}/tags/${tagId}`, { method: "DELETE" })
+        const data = await response.json()
+        if (!response.ok) { toast.error(data.message); return }
         setTags(tags.filter((tag) => tag.id !== tagId));
     };
     return (
