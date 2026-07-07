@@ -1,13 +1,14 @@
 'use client'
-import { useState } from 'react';
+import { useState, Dispatch, SetStateAction } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Pencil, Trash2, X, Plus } from 'lucide-react';
 import { ResourceType } from '@/generated/prisma/enums';
-import DeleteResourceButton from '../deleteResource';
+import { toast } from 'sonner';
+import { useRouter } from 'next/navigation';
 
-interface ResourceTag {
+export interface ResourceTag {
     id: string;
     name: string;
 }
@@ -25,107 +26,55 @@ export interface ResourceProps {
         updatedAt?: Date | null;
         file?: File | null;
         deletedAt?: Date | null;
-        projectId :string
+        projectId: string
     }
 }
 
-export function NoteView({ resource, projectId }: { resource: ResourceProps['resource'], projectId: string }) {
-    const [isEditing, setIsEditing] = useState(false);
+export function NoteView({ resource, isEditing, setIsEditing }: { resource: ResourceProps['resource'], isEditing: boolean, setIsEditing: Dispatch<SetStateAction<boolean>> }) {
+
     const [editContent, setEditContent] = useState(resource.content || '');
-    const [newTag, setNewTag] = useState('');
-    const [tags, setTags] = useState<ResourceTag[]>(resource.resourceTags);
 
-    const handleAddTag = () => {
-        if (newTag.trim()) {
-            // This will be connected to your API
-            setTags([...tags, { id: Date.now().toString(), name: newTag }]);
-            setNewTag('');
+
+    const handleSave = async () => {
+        const response = await fetch(`/api/resources/${resource.id}`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                body: {
+                    content: editContent
+                }
+            })
+        })
+        const data = await response.json()
+        if (!response.ok) {
+            toast.error(data.message)
+            return
         }
-    };
-
-    const handleRemoveTag = (tagId: string) => {
-        // This will be connected to your API
-        setTags(tags.filter((tag) => tag.id !== tagId));
-    };
-
-    const handleSave = () => {
-        // Connect to your API to save the content
         setIsEditing(false);
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 p-8">
-            <div className="max-w-4xl mx-auto">
-                {/* Header */}
-                <div className="mb-8">
-                    <div className="flex items-start justify-between mb-4">
-                        <h1 className="text-4xl font-bold text-gray-900">{resource.displayName}</h1>
-                        <div className="flex gap-2">
-                            <Button variant="outline" onClick={() => setIsEditing(!isEditing)}>
-                                <Pencil className="w-4 h-4 mr-2" />
-                                {isEditing ? 'Cancel' : 'Edit'}
-                            </Button>
-                            <DeleteResourceButton id={resource.id} projectId={projectId} />
-                        </div>
-                    </div>
+        <div className="bg-white rounded-lg border border-gray-200 p-8 mb-8">
+            {isEditing ? (
+                <div className="space-y-4">
+                    <label className="block text-sm font-medium text-gray-900 mb-2">
+                        Content
+                    </label>
+                    <textarea value={editContent} onChange={(e) => setEditContent(e.target.value)} rows={15}
+                        className="w-full border border-gray-300 rounded-lg p-4 font-mono text-sm resize-none"
+                        placeholder="Enter your note content..."
+                    />
+                    <Button onClick={handleSave} className="w-full">
+                        Save Changes
+                    </Button>
                 </div>
-
-                {/* Content Editor/Viewer */}
-                <div className="bg-white rounded-lg border border-gray-200 p-8 mb-8">
-                    {isEditing ? (
-                        <div className="space-y-4">
-                            <label className="block text-sm font-medium text-gray-900 mb-2">
-                                Content
-                            </label>
-                            <textarea value={editContent} onChange={(e) => setEditContent(e.target.value)} rows={15}
-                                className="w-full border border-gray-300 rounded-lg p-4 font-mono text-sm resize-none"
-                                placeholder="Enter your note content..."
-                            />
-                            <Button onClick={handleSave} className="w-full">
-                                Save Changes
-                            </Button>
-                        </div>
-                    ) : (
-                        <div className="prose prose-sm max-w-none">
-                            <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">
-                                {editContent || 'No content yet. Click Edit to add content.'}
-                            </p>
-                        </div>
-                    )}
+            ) : (
+                <div className="prose prose-sm max-w-none">
+                    <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">
+                        {editContent || 'No content yet. Click Edit to add content.'}
+                    </p>
                 </div>
-
-                {/* Tags Section */}
-                <div className="bg-white rounded-lg border border-gray-200 p-8">
-                    <h2 className="text-lg font-semibold text-gray-900 mb-4">Tags</h2>
-
-                    {/* Add Tag */}
-                    <div className="flex gap-2 mb-4">
-                        <Input placeholder="Add a new tag" value={newTag} onChange={(e) => setNewTag(e.target.value)}
-                            onKeyUp={(e) => e.key === 'Enter' && handleAddTag()}
-                        />
-                        <Button type="button" size="sm" variant="outline" onClick={handleAddTag} className="px-3">
-                            <Plus className="w-4 h-4" />
-                        </Button>
-                    </div>
-
-                    {/* Display Tags */}
-                    {tags.length > 0 ? (
-                        <div className="flex flex-wrap gap-2">
-                            {tags.map((tag) => (
-                                <Badge key={tag.id} variant="secondary" className="flex gap-2 items-center py-2">
-                                    {tag.name}
-                                    <button
-                                        onClick={() => handleRemoveTag(tag.id)}
-                                        className="hover:text-red-600"
-                                    >
-                                        <X className="w-3 h-3" />
-                                    </button>
-                                </Badge>
-                            ))}
-                        </div>
-                    ) : (<p className="text-sm text-gray-500">No tags yet</p>)}
-                </div>
-            </div>
+            )}
         </div>
     );
 }
