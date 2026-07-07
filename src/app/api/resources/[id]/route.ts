@@ -31,6 +31,24 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
     return Response.json({ resource }, { status: 200 })
 }
 
+export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
+    const { id } = await params
+    const userId = await getCurrentUser();
+    if (!userId) {
+        return Response.json({
+            success: false,
+            message: "User Id not Found"
+        }, { status: 404 })
+    }
+    const { body } = await req.json()
+    console.log(body)
+    await prisma.resource.update({
+        where: { id },
+        data: body
+    })
+    return Response.json({ message: "Updated" }, { status: 200 })
+}
+
 export async function DELETE(req: Request, { params }: { params: Promise<{ id: string }> }) {
     const { id } = await params
     const userId = await getCurrentUser();
