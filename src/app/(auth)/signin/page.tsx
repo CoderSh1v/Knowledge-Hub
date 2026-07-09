@@ -3,24 +3,34 @@ import { useForm, SubmitHandler } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import z from "zod"
 import { signInSchema } from "@/lib/schema"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams, usePathname } from "next/navigation"
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import Link from 'next/link';
 import Navbar from "@/components/navbar2"
+import { toast } from "sonner"
+import { useEffect } from "react"
 
 function SignIn() {
     type Inputs = z.infer<typeof signInSchema>
-    const {
-        register,
-        handleSubmit,
-
-        formState: { errors },
-    } = useForm<Inputs>({
-        resolver: zodResolver(signInSchema)
-    })
+    const { register, handleSubmit, formState: { errors }, } = useForm<Inputs>({ resolver: zodResolver(signInSchema) })
 
     const router = useRouter();
+    const pathname = usePathname();
+    const searchParams = useSearchParams();
+    useEffect(() => {
+        if (searchParams.get("reason") === "session_expired") {
+            setTimeout(() => {
+                toast("You have been logged out. Please sign in again.", { position: "top-center", });
+            }, 1);
+                const params = new URLSearchParams(searchParams.toString());
+                params.delete("reason");
+                const query = params.toString();
+                router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false, });
+           
+        }
+    }, []);
+
     const onSubmit: SubmitHandler<Inputs> = async (formData) => {
         const res = await fetch('/api/auth/signin', {
             method: "POST",
@@ -28,10 +38,7 @@ function SignIn() {
             body: JSON.stringify(formData)
         })
         const data = await res.json()
-        if (!res.ok) {
-            console.log(data.message)
-            return
-        }
+        if (!res.ok) { toast(data.message); return }
         router.replace('/dashboard')
     }
 
