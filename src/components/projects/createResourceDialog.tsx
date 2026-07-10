@@ -41,13 +41,22 @@ export default function CreateResourceDialog({ projectId }: { projectId: string 
     };
 
     const onSubmit: SubmitHandler<z.output<typeof newResourceSchema>> = async (formData) => {
+        let uploadResponse = null;
+        if (formData.file) {
+            const fd = new FormData();
+            fd.append("file", formData.file);
+            const response = await fetch("/api/upload", {
+                method: "POST",
+                body: fd,
+            })
+            uploadResponse = await response.json()
+        }
         const response = await fetch('/api/resources', {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ formData, projectId })
+            body: JSON.stringify({ formData, projectId, file: uploadResponse.fileDetails })
         })
         const data = await response.json()
-        console.log(data)
         if (!response.ok) {
             toast.error(data.message)
             return

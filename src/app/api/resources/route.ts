@@ -9,14 +9,15 @@ interface CreateResourceRequest {
       description: string | null;
       tags: string[];
       url: string | null;
-      file: {
-         fileName: string
-         fileURL: string
-         mimeType: string
-         fileSize: number
-      }
    }
-   projectId: string;
+   projectId: string,
+   file: {
+      fileName: string,
+      fileSize: number,
+      fileURL: string,
+      mimeType: string,
+      publicId: string
+   }
 }
 export async function POST(req: Request) {
    try {
@@ -26,7 +27,7 @@ export async function POST(req: Request) {
       const data: CreateResourceRequest = await req.json()
       const { title, resourceType } = data.formData
       if (!title || !resourceType) return Response.json({ message: "title is required" }, { status: 400 })
-      let { description, tags, url, file } = data.formData
+      let { description, tags, url } = data.formData
       const uniqueTags: string[] = [...new Set(tags.map((tag: string) => tag.trim().toLowerCase()))];
 
       if (!description) description = null;
@@ -48,10 +49,7 @@ export async function POST(req: Request) {
                   tag: {
                      connectOrCreate: {
                         where: { userId_name: { userId, name: tag } },
-                        create: {
-                           name: tag,
-                           user: { connect: { id: userId } }
-                        }
+                        create: { name: tag, user: { connect: { id: userId } } }
                      }
                   }
                }
@@ -60,21 +58,15 @@ export async function POST(req: Request) {
          user: { connect: { id: userId } },
          project: { connect: { id: data.projectId } }
       }
-
+      const file = data.file
       if (resourceType === "PDF" || resourceType === "IMAGE") {
          if (!file) return Response.json({ message: "File is missing" }, { status: 400 })
          url = null;
-         resourceData.file = {
-            create: {
-               fileName: file.fileName,
-               fileSize: file.fileSize,
-               fileURL: file.fileURL,
-               mimeType: file.mimeType
-            }
-         }
+         resourceData.file = { create: file }
       }
       const resource = await prisma.resource.create({ data: resourceData })
-      return Response.json({ success: true, message: 'resource created', resource }, { status: 201 })
+      
+      return Response.json({ message: 'resource created', }, { status: 201 })
    } catch (err: unknown) {
       if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
          return Response.json({
