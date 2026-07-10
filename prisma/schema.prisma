@@ -76,9 +76,11 @@ model File {
   fileURL    String
   mimeType   String
   fileSize   Int
+  publicId   String   @unique 
   createdAt  DateTime @default(now())
 
   @@index([resourceId])
+  @@index([publicId])
 }
 
 model Tag {
