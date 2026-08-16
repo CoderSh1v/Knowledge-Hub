@@ -1,12 +1,8 @@
 'use client'
 import { useState, Dispatch, SetStateAction } from 'react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { Pencil, Trash2, X, Plus } from 'lucide-react';
 import { ResourceType } from '@/generated/prisma/enums';
 import { toast } from 'sonner';
-import { useRouter } from 'next/navigation';
 
 export interface ResourceTag {
     id: string;
@@ -24,7 +20,15 @@ export interface ResourceProps {
         externalLink?: string | null;
         createdAt?: Date | null;
         updatedAt?: Date | null;
-        file?: File | null;
+        file?: {
+            id: string,
+            fileName: string,
+            fileURL: string,
+            mimeType: string,
+            fileSize: number,
+            publicId: string,
+            createdAt: string
+        } | null;
         deletedAt?: Date | null;
         projectId: string
     }
