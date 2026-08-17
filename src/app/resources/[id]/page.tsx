@@ -10,6 +10,7 @@ import DeleteResourceButton from '@/components/resources/deleteResource'
 import { Pencil } from 'lucide-react';
 import { Button } from '@/components/ui/button'
 import ShowAndEditTags from '@/components/resources/ShowAndEditTags'
+import { FileView } from '@/components/resources/single resource UI/FileView'
 
 const SingleResource = () => {
   const params = useParams<{ id: string }>()
@@ -41,11 +42,11 @@ const SingleResource = () => {
       break;
 
     case "PDF":
-      {/* whichResourceToShow = <NoteView resource={resource} key={resource.id} /> */ }
+      whichResourceToShow =<FileView resource={resource} key={resource.id} isEditing={isEditing} setIsEditing={setIsEditing} /> 
       break;
 
     case "IMAGE":
-      {/* whichResourceToShow =<NoteView resource={resource} key={resource.id} /> */ }
+      whichResourceToShow =<FileView resource={resource} key={resource.id} isEditing={isEditing} setIsEditing={setIsEditing} /> 
       break;
 
     default:
