@@ -27,10 +27,10 @@ const ResourceSection = ({ resources, projectId, onDelete }: { resources: Resour
                                 href = `${resource.externalLink}`;
                                 break;
                             case "IMAGE":
-                                href = ``;
+                                href = `${resource.file?.fileURL}`;
                                 break;
                             case "PDF":
-                                href = ``;
+                                href = `${resource.file?.fileURL}`;
                                 break;
                             default:
                                 return null;

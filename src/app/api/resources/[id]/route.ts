@@ -21,7 +21,8 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
                 include: {
                     tag: true
                 }
-            }
+            },
+            file: true
         }
     })
     const resource = {

@@ -1,10 +1,7 @@
 import prisma from "@/lib/db";
 import getCurrentUser from "@/lib/getUserId";
 
-export async function GET(
-    request: Request,
-    { params }: { params: Promise<{ id: string }> }
-) {
+export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
     const userId = await getCurrentUser();
     if (!userId) {
@@ -25,7 +22,7 @@ export async function GET(
             userId: userId,
             projectId: id
         },
-        include: { resourceTags: { include: { tag: true } } }
+        include: { resourceTags: { include: { tag: true } }, file: true }
     })
     const resources = fullResource.map((resource) => ({
         ...resource,
