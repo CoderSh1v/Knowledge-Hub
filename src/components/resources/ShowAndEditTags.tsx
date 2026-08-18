@@ -12,6 +12,7 @@ const ShowAndEditTags = ({ resource }: { resource: ResourceProps['resource'] }) 
     const [tags, setTags] = useState<ResourceTag[]>(resource.resourceTags);
 
     const handleAddTag = async () => {
+        if(newTag == "") return 
         const response = await fetch(`/api/resources/${resource.id}/tags/`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
